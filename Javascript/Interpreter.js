@@ -53,6 +53,27 @@ class Interpreter {
    */
   setCode = (code) => {
     this.code = code
+    this.jumpMap = this.createJumpMap()
+  }
+
+  createJumpMap = (code = this.code) => {
+    const stack = []
+    const jumpMap = {}
+
+    for(let i=0; i < code.length; i++)  {
+      if (code[i] === '[') {
+        stack.push(i)
+      } else if (code[i] === ']') {
+        if(stack.length !== 0) {
+          const startIndex = stack.pop()
+          const endIndex = i
+          jumpMap[startIndex] = endIndex+1
+          jumpMap[endIndex] = startIndex+1
+        }
+      }
+    }
+
+    return jumpMap
   }
 
   reset = () => {
@@ -114,7 +135,7 @@ class Interpreter {
 
   jumpForwardIfZero = () => {
     if(this.currentData() === 0) {
-      this.codeIndex = this.nextJump()
+      this.codeIndex = this.getJump()
     } else {
       this.codeIndex++
     }
@@ -122,44 +143,17 @@ class Interpreter {
 
   jumpBackwardIfNotZero = () => {
     if(this.currentData() !== 0) {
-      this.codeIndex = this.prevJump()
+      this.codeIndex = this.getJump()
     } else {
       this.codeIndex++
     }
   }
 
-  nextJump = () => {
-    const stack = []
-    for (let i = this.codeIndex+1; i < this.code.length; i++) {
-      if (this.code[i] === '[') {
-        stack.push('[')
-      } else if(this.code[i] === ']') {
-        if (stack.length === 0) {
-          return i + 1
-        } else {
-          stack.pop()
-        }
-      }
-    }
-
-    return this.codeIndex + 1
-  }
-
-  prevJump = () => {
-    const stack = []
-    for (let i = this.codeIndex-1; i >= 0; i--) {
-      if (this.code[i] === ']') {
-        stack.push(']')
-      } else if(this.code[i] === '[') {
-        if (stack.length === 0) {
-          return i + 1
-        } else {
-          stack.pop()
-        }
-      }
-    }
-
-    return this.codeIndex + 1
+  getJump = (index = this.codeIndex, jumpMap = this.jumpMap) => {
+    const nextIndex = jumpMap[index]
+    return nextIndex === undefined
+      ? index + 1
+      : nextIndex
   }
 }
 
