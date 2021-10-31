@@ -1,0 +1,20 @@
+{
+  "name": "brainfuck-js",
+  "version": "0.0.1",
+  "description": "A javascript interpreter for brainfuck",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "brainfuck"
+  ],
+  "author": "Yukiiro-Nite",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^27.3.1"
+  },
+  "dependencies": {
+    "args": "^5.0.1"
+  }
+}
